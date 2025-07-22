@@ -79,10 +79,11 @@ fn main() {
     if let Some(repo_root) = find_git_repo_root(current_dir) {
         if let Some(url) = get_url_from_config(repo_root) {
             let browser_url = convert_to_browser_url(url);
+            let actions_url = format!("{}/actions", browser_url);
             Command::new("open")
-                .arg(&browser_url)
+                .arg(&actions_url)
                 .output()
-                .expect(format!("Failed to open {browser_url} in browser").as_str());
+                .expect(format!("Failed to open {actions_url} in browser").as_str());
         } else {
             eprintln!("No remote 'origin' found or no 'url' specified.");
         }
