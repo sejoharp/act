@@ -1,0 +1,58 @@
+name: build releases
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            arch: x86_64-unknown-linux-gnu
+          - os: ubuntu-24.04-arm
+            arch: aarch64-unknown-linux-gnu
+          - os: macos-latest
+            arch: x86_64-apple-darwin
+          - os: macos-latest
+            arch: aarch64-apple-darwin
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get commit count
+        run: echo "RELEASE_VERSION=$(make new_version)" >> $GITHUB_ENV
+
+      - name: Set up Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          target: ${{ matrix.arch }}
+          toolchain: stable
+
+      - name: update version
+        run: make version_update
+
+      - name: Build Rust binary
+        run: cargo build --release --target ${{ matrix.arch }}
+
+      - name: Rename binary
+        run: mv target/${{ matrix.arch }}/release/act target/${{ matrix.arch }}/release/act-${{ matrix.arch }}
+
+      - name: Upload binary
+        uses: softprops/action-gh-release@v2
+        with:
+          files: target/${{ matrix.arch }}/release/act-${{ matrix.arch }}
+          tag_name: v${{ env.RELEASE_VERSION }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
