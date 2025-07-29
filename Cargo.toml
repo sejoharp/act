@@ -1,6 +1,6 @@
 [package]
 name = "act"
-version = "1.0.0"
+version = "5.0.0"
 edition = "2024"
 
 [dependencies]
@@ -8,5 +8,6 @@ rust-ini = "0.21"
 clap = { version = "4.5.*", features = ["env"] }
 
 [profile.release]
-strip = true
+strip = true # does not minimize binary size in nix build
 lto = true
+codegen-units = 1
