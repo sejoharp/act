@@ -3,7 +3,7 @@
 
   inputs = {
     # Latest stable Nixpkgs
-    nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0";
+    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     # A helper library for Rust + Nix
     rust-overlay.url = "https://flakehub.com/f/oxalica/rust-overlay/*";
   };
