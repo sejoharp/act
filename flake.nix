@@ -8,8 +8,14 @@
     rust-overlay.url = "https://flakehub.com/f/oxalica/rust-overlay/*";
   };
 
-  outputs = { self, nixpkgs, rust-overlay }:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      rust-overlay,
+    }:
     let
+      pkgs = import <nixpkgs> { };
       manifest = (nixpkgs.lib.importTOML ./Cargo.toml).package;
 
       # Systems supported
@@ -21,17 +27,22 @@
       ];
 
       # Helper to provide system-specific attributes
-      forAllSystems = f: nixpkgs.lib.genAttrs allSystems (system: f {
-        pkgs = import nixpkgs {
-          inherit system;
-          overlays = [
-            # Provides Nixpkgs with a rust-bin attribute for building Rust toolchains
-            rust-overlay.overlays.default
-            # Uses the rust-bin attribute to select a Rust toolchain
-            self.overlays.default
-          ];
-        };
-      });
+      forAllSystems =
+        f:
+        nixpkgs.lib.genAttrs allSystems (
+          system:
+          f {
+            pkgs = import nixpkgs {
+              inherit system;
+              overlays = [
+                # Provides Nixpkgs with a rust-bin attribute for building Rust toolchains
+                rust-overlay.overlays.default
+                # Uses the rust-bin attribute to select a Rust toolchain
+                self.overlays.default
+              ];
+            };
+          }
+        );
     in
     {
       overlays.default = final: prev: {
@@ -39,22 +50,55 @@
         rustToolchain = final.rust-bin.stable.latest.default;
       };
 
-      packages = forAllSystems ({ pkgs }: {
-        default =
-          let
-            rustPlatform = pkgs.makeRustPlatform {
-              cargo = pkgs.rustToolchain;
-              rustc = pkgs.rustToolchain;
+      packages = forAllSystems (
+        { pkgs }:
+        {
+          default =
+            let
+              rustPlatform = pkgs.makeRustPlatform {
+                cargo = pkgs.rustToolchain;
+                rustc = pkgs.rustToolchain;
+              };
+              getCommitCount =
+                pkgs:
+                pkgs.runCommand "get-commit-count"
+                  {
+                    buildInputs = [ pkgs.git ];
+                  }
+                  ''
+                    cd ${./.}
+                    echo "current directory content: $(ls -halt)"
+                    if [ -d .git ]; then
+                      COMMIT_COUNT=$(git rev-list --count HEAD 2>/dev/null || echo "1")
+                    else
+                      COMMIT_COUNT="99"
+                    fi
+                    printf "%s.0.0" "$COMMIT_COUNT" > $out
+                  '';
+              commitCountFile = getCommitCount pkgs;
+              dynamicVersion = builtins.replaceStrings [ "\n" " " "\t" ] [ "" "" "" ] (
+                builtins.readFile commitCountFile
+              );
+
+            in
+            rustPlatform.buildRustPackage {
+              name = manifest.name;
+              version = 99.0;
+              # src = pkgs.lib.cleanSource ./.;
+              src = ./.;
+              cargoLock = {
+                lockFile = ./Cargo.lock;
+              };
+              preBuild = ''
+                # bash
+                echo "current directory content: $(ls -halt)"
+                echo "Setting version to: ${dynamicVersion}"
+                sed -i 's/^version = ".*"/version = "${dynamicVersion}"/' Cargo.toml
+                echo "Updated Cargo.toml:"
+                grep '^version = ' Cargo.toml
+              '';
             };
-          in
-          rustPlatform.buildRustPackage {
-            name = manifest.name;
-            version = manifest.version;
-            src = ./.;
-            cargoLock = {
-              lockFile = ./Cargo.lock;
-            };
-          };
-      });
+        }
+      );
     };
 }
