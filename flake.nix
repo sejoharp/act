@@ -71,7 +71,8 @@
                     if [ -d .git ]; then
                       COMMIT_COUNT=$(git rev-list --count HEAD 2>/dev/null || echo "1")
                     else
-                      COMMIT_COUNT="99"
+                      echo "==> The .git directory is missing <== "
+                      COMMIT_COUNT="BOOM"
                     fi
                     printf "%s.0.0" "$COMMIT_COUNT" > $out
                   '';
