@@ -63,17 +63,11 @@
                 pkgs:
                 pkgs.runCommand "get-commit-count"
                   {
-                    buildInputs = [ pkgs.git ];
+                    buildInputs = [ pkgs.git pkgs.curl ];
                   }
                   ''
+                    COMMIT_COUNT=$(curl -s -I -k "https://api.github.com/repos/sejoharp/act/commits?per_page=1" | sed -n '/^[Ll]ink:/ s/.*"next".*page=\([0-9]*\).*"last".*/\1/p')
                     cd ${./.}
-                    echo "current directory content: $(ls -halt)"
-                    if [ -d .git ]; then
-                      COMMIT_COUNT=$(git rev-list --count HEAD 2>/dev/null || echo "1")
-                    else
-                      echo "==> The .git directory is missing <== "
-                      COMMIT_COUNT="BOOM"
-                    fi
                     printf "%s.0.0" "$COMMIT_COUNT" > $out
                   '';
               commitCountFile = getCommitCount pkgs;

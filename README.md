@@ -3,6 +3,7 @@
 - [Installation](#installation)
   - [install release](#install-release)
   - [install from source](#install-from-source)
+  - [install with nix](#install-with-nix)
 - [Development](#development)
   - [create a release](#create-a-release)
 - [benchmarks](#benchmarks)
@@ -10,7 +11,6 @@
   - [bash script](#bash-script)
   - [act](#act)
 <!-- TOC -->
-
 
 Searches upwards for git root directory and opens the corresponding github actions page.
 
@@ -36,6 +36,11 @@ brew install rustup-init
 
 # build and install act
 make install
+```
+
+## install with nix
+```shell
+nix build
 ```
 
 # Development
