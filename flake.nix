@@ -78,9 +78,8 @@
             in
             rustPlatform.buildRustPackage {
               name = manifest.name;
-              version = 99.0;
-              # src = pkgs.lib.cleanSource ./.;
-              src = ./.;
+              version = manifest.version;
+              src = pkgs.lib.cleanSource ./.;
               cargoLock = {
                 lockFile = ./Cargo.lock;
               };
