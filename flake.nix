@@ -67,7 +67,6 @@
                   }
                   ''
                     COMMIT_COUNT=$(curl -s -I -k "https://api.github.com/repos/sejoharp/act/commits?per_page=1" | sed -n '/^[Ll]ink:/ s/.*"next".*page=\([0-9]*\).*"last".*/\1/p')
-                    cd ${./.}
                     printf "%s.0.0" "$COMMIT_COUNT" > $out
                   '';
               commitCountFile = getCommitCount pkgs;
@@ -78,7 +77,7 @@
             in
             rustPlatform.buildRustPackage {
               name = manifest.name;
-              version = manifest.version;
+              version = dynamicVersion;
               src = pkgs.lib.cleanSource ./.;
               cargoLock = {
                 lockFile = ./Cargo.lock;
