@@ -59,35 +59,14 @@
                 cargo = pkgs.rustToolchain;
                 rustc = pkgs.rustToolchain;
               };
-              getCommitCount =
-                pkgs:
-                pkgs.runCommand "get-commit-count"
-                  {
-                    buildInputs = [ pkgs.git pkgs.curl ];
-                  }
-                  ''
-                    COMMIT_COUNT=$(curl -s -I -k "https://api.github.com/repos/sejoharp/act/commits?per_page=1" | sed -n '/^[Ll]ink:/ s/.*"next".*page=\([0-9]*\).*"last".*/\1/p')
-                    printf "%s.0.0" "$COMMIT_COUNT" > $out
-                  '';
-              commitCountFile = getCommitCount pkgs;
-              dynamicVersion = builtins.replaceStrings [ "\n" " " "\t" ] [ "" "" "" ] (
-                builtins.readFile commitCountFile
-              );
-
             in
             rustPlatform.buildRustPackage {
               name = manifest.name;
-              version = dynamicVersion;
+              version = manifest.version;
               src = pkgs.lib.cleanSource ./.;
               cargoLock = {
                 lockFile = ./Cargo.lock;
               };
-              preBuild = ''
-                # bash
-                sed -i 's/^version = ".*"/version = "${dynamicVersion}"/' Cargo.toml
-                echo "Updated Cargo.toml:"
-                grep '^version = ' Cargo.toml
-              '';
             };
         }
       );
