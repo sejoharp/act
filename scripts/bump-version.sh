@@ -27,5 +27,6 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 else
   sed -i "s/^version = \".*\"/version = \"$NEW_VERSION\"/" Cargo.toml
 fi
+cargo check --quiet
 
 echo "Updated Cargo.toml: $(grep '^version = ' Cargo.toml)"
