@@ -10,6 +10,16 @@ permissions:
   contents: write
 
 jobs:
+  create_release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          draft: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   build:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -46,5 +56,6 @@ jobs:
         with:
           files: target/${{ matrix.arch }}/release/act-${{ matrix.arch }}
           tag_name: ${{ github.ref_name }}
+          draft: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
