@@ -31,3 +31,8 @@ help: ## shows help message
 .PHONY: tag-release
 tag-release:
 	git tag v$(shell cargo pkgid | cut -d# -f2 | cut -d: -f2)
+
+.PHONY: push-release
+push-release:
+	git push
+	git push --tags
