@@ -7,7 +7,6 @@
   - [install via nix home-manager](#install-via-nix-home-manager)
 - [Development](#development)
   - [create a release](#create-a-release)
-  - [create a release now](#create-a-release-now)
 - [benchmarks](#benchmarks)
   - [gh cli](#gh-cli)
   - [bash script](#bash-script)
@@ -71,16 +70,20 @@ nh home switch .
 # Development
 
 ## create a release
-1. make a commit 
-2. push it
-3. github actions will create a release
+```bash
+# bump version (patch by default)
+make version-update
 
-## create a release now
-TODO: create github actions pipeline create a release on new tag
-1. bump version
-2. commit
-3. set tag
-4. push
+# create a git commit
+git add ...
+git commit ...
+
+# tag the commit
+make tag-release
+
+# push commit and tag
+make push-release
+```
 
 # benchmarks
 ## gh cli
