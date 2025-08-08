@@ -7,6 +7,7 @@
   - [install via nix home-manager](#install-via-nix-home-manager)
 - [Development](#development)
   - [create a release](#create-a-release)
+  - [create a release now](#create-a-release-now)
 - [benchmarks](#benchmarks)
   - [gh cli](#gh-cli)
   - [bash script](#bash-script)
@@ -27,7 +28,7 @@ act
 
 ## install release
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/sejoharp/act/refs/heads/main/install.sh)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/sejoharp/act/refs/heads/main/scripts/install.sh)"
 ```
 
 ## install from source
@@ -71,6 +72,13 @@ nh home switch .
 1. make a commit 
 2. push it
 3. github actions will create a release
+
+## create a release now
+TODO: create github actions pipeline create a release on new tag
+1. bump version
+2. commit
+3. set tag
+4. push
 
 # benchmarks
 ## gh cli
