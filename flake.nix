@@ -84,8 +84,6 @@
               };
               preBuild = ''
                 # bash
-                echo "current directory content: $(ls -halt)"
-                echo "Setting version to: ${dynamicVersion}"
                 sed -i 's/^version = ".*"/version = "${dynamicVersion}"/' Cargo.toml
                 echo "Updated Cargo.toml:"
                 grep '^version = ' Cargo.toml
