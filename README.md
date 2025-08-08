@@ -46,18 +46,20 @@ nix build
 ```
 
 ## install via nix home-manager
-add this as input:
-```nix
-    actpkg = {
-      url = "github:sejoharp/act";
-    };
-```
 ```bash
 # move to home-manager config. e.g.:
 cd ~/.config/home-manager
 
+# add this as input;
+    actpkg = {
+      url = "github:sejoharp/act";
+    };
+
 # optional: update index
 nix flake lock --update-input actpkg
+
+# add this to packages:
+inputs.reposyncpkg.packages.${pkgs.stdenv.system}.default
 
 # build generation
 nh home build .
