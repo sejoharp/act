@@ -3,7 +3,8 @@
 - [Installation](#installation)
   - [install release](#install-release)
   - [install from source](#install-from-source)
-  - [install with nix](#install-with-nix)
+  - [install local with nix](#install-local-with-nix)
+  - [install via nix home-manager](#install-via-nix-home-manager)
 - [Development](#development)
   - [create a release](#create-a-release)
 - [benchmarks](#benchmarks)
@@ -38,9 +39,30 @@ brew install rustup-init
 make install
 ```
 
-## install with nix
+## install local with nix
 ```shell
 nix build
+```
+
+## install via nix home-manager
+add this as input:
+```nix
+    actpkg = {
+      url = "github:sejoharp/act";
+    };
+```
+```bash
+# move to home-manager config. e.g.:
+cd ~/.config/home-manager
+
+# optional: update index
+nix flake lock --update-input actpkg
+
+# build generation
+nh home build .
+
+# switch generation
+nh home switch .
 ```
 
 # Development
